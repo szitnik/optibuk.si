@@ -32,7 +32,6 @@
 
     <!-- Scans the classpath for annotated components that will be auto-registered as Spring beans.
      For example @Controller and @Service. Make sure to set the correct base-package-->
-    <context:component-scan base-package="si.zitnik.likebook.service" />
     <context:component-scan base-package="si.zitnik.likebook.controller" />
     <context:component-scan base-package="si.zitnik.likebook.config" />
     <context:component-scan base-package="si.zitnik.likebook.repository" />
@@ -44,36 +43,10 @@
     <tx:annotation-driven/>
     <mvc:resources mapping="/resources/**" location="/resources/" />
 
-    <!-- Imports logging configuration -->
-    <import resource="trace-context.xml"/>
-
     <!-- Imports datasource configuration -->
     <import resource="spring-data.xml"/>
 
-    <!-- Spring Security -->
-    <!--<import resource="spring-security.xml"/>-->
-    <sec:http use-expressions="true" authentication-manager-ref="authenticationManager">
-        <!-- Authentication policy -->
-        <sec:form-login login-page="/signin" login-processing-url="/signin/authenticate" authentication-failure-url="/signin?param.error=bad_credentials" />
-        <sec:logout logout-url="/signout" delete-cookies="JSESSIONID" />
-
-
-        <sec:intercept-url pattern="/resources/**" access="permitAll" />
-        <!--
-        <sec:intercept-url pattern="/" access="permitAll" />
-        <sec:intercept-url pattern="/resources/**" access="permitAll" />
-        <sec:intercept-url pattern="/image/**" access="permitAll" />
-        <sec:intercept-url pattern="/contact" access="permitAll" />
-        -->
-        <sec:intercept-url pattern="/signup/**" access="permitAll" />
-        <sec:intercept-url pattern="/signin/**" access="permitAll" />
-
-        <sec:intercept-url pattern="/admin/**" access="hasRole('ROLE_ADMIN')" />
-        <sec:intercept-url pattern="/**" access="isAuthenticated()"  />
-    </sec:http>
-
-
-    <sec:authentication-manager alias="authenticationManager" >
-    </sec:authentication-manager>
+    <!-- Imports Spring Security configuration -->
+    <import resource="spring-security.xml"/>
 
 </beans>

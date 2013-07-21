@@ -15,24 +15,20 @@
  */
 package si.zitnik.likebook.controller;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.social.connect.Connection;
-import org.springframework.social.connect.UserProfile;
 import org.springframework.social.connect.web.ProviderSignInUtils;
 import org.springframework.social.facebook.api.Facebook;
-import org.springframework.social.facebook.api.FacebookProfile;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.WebRequest;
 import si.zitnik.likebook.domain.User;
 import si.zitnik.likebook.repository.UserRepository;
-import si.zitnik.likebook.util.SignInUtils;
 
 import javax.inject.Inject;
-import javax.validation.Valid;
 
 @Controller
 public class SignupController {
@@ -52,12 +48,14 @@ public class SignupController {
         User user = userRepository.findByFbId(fbId);
         if (user == null) {
             //do signup
-            SignInUtils.signin(fbId);
+            //Programmatically signs in the user with the given the user ID.
+            SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(fbId, null, null));
             ProviderSignInUtils.handlePostSignUp(fbId, request);
-            return "redirect:/filldata/" + fbId;
+            return "redirect:/filldata";
         } else {
             //do signin
-            SignInUtils.signin(fbId);
+            //Programmatically signs in the user with the given the user ID.
+            SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(fbId, null, null));
         }
 
         return "redirect:/";

@@ -26,17 +26,6 @@
     <!-- Activate Spring Data JPA repository support -->
     <jpa:repositories base-package="si.zitnik.likebook.repository" />
 
-    <!-- Declare a datasource that has pooling capabilities
-        amazon: 54.246.104.241
-
-        http://likebook.si:81/phpmyadmin/
-        root/BeReSeMi.01
-        likebook/BeReSeMi.01
-
-        same for likebook.si/manager
-
-        likebook baza mora biti nastavljena za utf8-unicode kodiranje
-    -->
     <bean id="jpaDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
           destroy-method="close"
           p:driverClass="com.mysql.jdbc.Driver"

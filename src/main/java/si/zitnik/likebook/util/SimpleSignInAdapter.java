@@ -1,5 +1,7 @@
 package si.zitnik.likebook.util;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
@@ -30,7 +32,8 @@ public class SimpleSignInAdapter implements SignInAdapter {
 
     @Override
     public String signIn(String localUserId, Connection<?> connection, NativeWebRequest request) {
-        SignInUtils.signin(localUserId);
+        //Programmatically signs in the user with the given the user ID.
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(localUserId, null, null));
         return extractOriginalUrl(request);
     }
 
@@ -42,15 +45,11 @@ public class SimpleSignInAdapter implements SignInAdapter {
             return null;
         }
         requestCache.removeRequest(nativeReq, nativeRes);
-        removeAutheticationAttributes(nativeReq.getSession(false));
-        return saved.getRedirectUrl();
-    }
-
-    private void removeAutheticationAttributes(HttpSession session) {
-        if (session == null) {
-            return;
+        HttpSession session = nativeReq.getSession(false);
+        if (session != null) {
+            session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
         }
-        session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
+        return saved.getRedirectUrl();
     }
 
 }

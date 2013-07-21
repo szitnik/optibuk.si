@@ -2,9 +2,9 @@ package si.zitnik.likebook.domain;
 
 import org.hibernate.annotations.Type;
 
-import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 /**
  * Created with IntelliJ IDEA.

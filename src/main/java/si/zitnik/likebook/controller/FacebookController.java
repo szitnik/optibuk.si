@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import si.zitnik.likebook.domain.User;
 import si.zitnik.likebook.repository.UserRepository;
-import si.zitnik.likebook.util.SignInUtils;
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
@@ -37,15 +36,12 @@ import java.util.List;
 @Controller
 public class FacebookController {
 
-
     @Inject
     private Facebook facebook;
 
     @Resource
     private UserRepository userRepository;
 
-    @Inject
-    private ConnectionRepository connectionRepository;
 
     @RequestMapping(value="/channel", method= RequestMethod.GET)
     public String channel(Model model) {
@@ -72,8 +68,8 @@ public class FacebookController {
     public void signin() {
     }
 
-    @RequestMapping(value="/filldata/{fbId}", method = RequestMethod.GET)
-    public String filldata(Model model, @PathVariable("fbId") String fbId) {
+    @RequestMapping(value="/filldata", method = RequestMethod.GET)
+    public String filldata(Model model) {
         createUser(facebook);
         return "redirect:/";
     }
@@ -100,53 +96,50 @@ public class FacebookController {
 
 
         List<EducationEntry> educationList = userProfile.getEducation(); //user_education_history
-        JSONArray jsonArray = new JSONArray();
+        StringBuffer sb = new StringBuffer("<ul>");
         for (EducationEntry e : educationList) {
-            try {
-                JSONObject jsonObj = new JSONObject();
-                jsonObj.put("id", e.getSchool().getId());
-                jsonObj.put("name", e.getSchool().getName());
-                jsonObj.put("type", e.getType());
-                jsonObj.put("year", e.getYear().getName());
-                jsonArray.put(jsonObj);
-            } catch (Exception e1) {}
+            String year = "";
+            if (e.getYear() != null) {
+                year = e.getYear().getName();
+            }
+            sb.append(String.format("<li>FB ID: <b>%s</b><br />Name: <b>%s</b><br />Type: <b>%s</b><br />Year: <b>%s</b></li>",
+                    e.getSchool().getId(),
+                    e.getSchool().getName(),
+                    e.getType(),
+                    year));
         }
-        user.setEducation(jsonArray.toString());
+        sb.append("</ul>");
+        user.setEducation(sb.toString());
 
-
-        try {
-            JSONObject hometownJsonObj = new JSONObject(); //user_hometown
-            hometownJsonObj.put("id", userProfile.getHometown().getId());
-            hometownJsonObj.put("name", userProfile.getHometown().getName());
-            user.setHometown(hometownJsonObj.toString());
-        } catch (Exception e) {}
+        //hometown
+        user.setHometown(String.format("<ul><li>FB ID: <b>%s</b><br />Name: <b>%s</b></li></ul>",
+                userProfile.getHometown().getId(),
+                userProfile.getHometown().getName()));
 
 
         PagedList<Page> pagesLiked = fbApi.likeOperations().getPagesLiked(); //user_likes
-        jsonArray = new JSONArray();
+        sb = new StringBuffer("<ul>");
         for (Page p : pagesLiked) {
             try {
-                JSONObject jsonObj = new JSONObject();
-                jsonObj.put("id", p.getId());
-                jsonObj.put("name", p.getName());
-                jsonObj.put("website", p.getWebsite());
-                jsonObj.put("likes", p.getLikes());
-                jsonArray.put(jsonObj);
+                sb.append(String.format("<li><img src=\"http://graph.facebook.com/%s/picture\" align=\"middle\"/><br />FB ID: <b>%s</b><br />Name: <b>%s</b><br />Website: <b>%s</b><br />Likes: <b>%s</b></li>",
+                    p.getId(),
+                    p.getId(),
+                    p.getName(),
+                    p.getWebsite(),
+                    p.getLikes()));
+
             } catch (Exception e) {}
         }
-        user.setAllFacebookLikes(jsonArray.toString());
+        sb.append("</ul>");
+        user.setAllFacebookLikes(sb.toString());
 
         PagedList<Reference> friends = fbApi.friendOperations().getFriends(); //
-        jsonArray = new JSONArray();
+        sb = new StringBuffer();
         for (Reference r : friends) {
-            try {
-                JSONObject jsonObj = new JSONObject();
-                jsonObj.put("id", r.getId());
-                jsonObj.put("name", r.getName());
-                jsonArray.put(jsonObj);
-            } catch (Exception e) {}
+            sb.append(String.format("<img src=\"http://graph.facebook.com/%s/picture\" align=\"middle\"/>&nbsp;&nbsp;",
+                    r.getId()));
         }
-        user.setAllFacebookFriends(jsonArray.toString());
+        user.setAllFacebookFriends(sb.toString());
 
         return userRepository.save(user);
     }
