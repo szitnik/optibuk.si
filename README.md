@@ -7,7 +7,7 @@ Running on Tomcat 7.01
 ----------------------
 Config
 
-    Set appropriate settings for Facebook Application (in SocialConfig.java) and database (in persistence.xml, spring-data.xml).
+Set appropriate settings for Facebook Application (in SocialConfig.java) and database (in persistence.xml, spring-data.xml).
 
 Run
 
