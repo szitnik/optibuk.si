@@ -68,6 +68,9 @@
 	</div>
     <div id="subheader"></div>
 	<div id="contents">
+        <h1>Like button:</h1><br />
+        <div class="fb-like" data-href="http://zitnik.si" data-send="true" data-width="450" data-show-faces="true"></div>
+
         <h1>Personal data:</h1><br />
         Facebook ID: <b>${user.fbId}</b><br />
         Username: <b>${user.username}</b><br />
